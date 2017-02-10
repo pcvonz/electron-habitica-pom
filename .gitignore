@@ -1,0 +1,10 @@
+__pycache__/
+*.swp
+*.swo
+bin/
+include/
+lib/
+node_modules/
+share/
+app/static
+app/index.html
