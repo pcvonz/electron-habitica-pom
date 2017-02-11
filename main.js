@@ -1,6 +1,10 @@
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
 const url = require('url')
+const electron = require('electron')
+const ipc = electron.ipcMain
+const Menu = electron.Menu
+const Tray = electron.Tray
 var request = require('request');
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -54,3 +58,29 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+
+let appIcon = null
+
+ipc.on('put-in-tray', function (event) {
+  const iconName = process.platform === 'win32' ? 'windows-icon.png' : 'iconTemplate.png'
+  const iconPath = path.join(__dirname, iconName)
+  appIcon = new Tray(iconPath)
+  const contextMenu = Menu.buildFromTemplate([{
+    label: 'Remove',
+    click: function () {
+      event.sender.send('tray-removed')
+    }
+  }])
+  appIcon.setToolTip('Electron Demo in the tray.')
+  appIcon.setContextMenu(contextMenu)
+})
+
+ipc.on('remove-tray', function () {
+  appIcon.destroy();
+	app.quit();
+})
+
+app.on('window-all-closed', function () {
+  if (appIcon) appIcon.destroy()
+})

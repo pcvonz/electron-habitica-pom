@@ -1,4 +1,4 @@
-var request = require('request');
+const ipc = require('electron').ipcRenderer
 
 habit =  {
   "id": 4711,
@@ -72,10 +72,52 @@ function set_time(ev, countdown) {
     }
     start_pom.disabled = false;
   } else {
-    var string = (minutes_countdown) + ":" + second_countdown.toFixed(0) % 60;
+    var string = (Math.floor(minutes_countdown)) + ":" + second_countdown.toFixed(0) % 60;
     time.innerHTML = string; 
     console.log(second_countdown);
     console.log(time.innerHTML);
     display_time(ev, countdown);
   }
 }
+
+
+
+//const trayBtn = document.getElementById('put-in-tray')
+//let trayOn = false
+
+//trayBtn.addEventListener('click', function (event) {
+//  if (trayOn) {
+//    trayOn = false
+//    ipc.send('remove-tray')
+//  } else {
+//    trayOn = true
+//    const message = 'Click demo again to remove.'
+//    ipc.send('put-in-tray')
+//  }
+//})
+//// Tray removed from context menu on icon
+//ipc.on('tray-removed', function () {
+//  ipc.send('remove-tray')
+//  trayOn = false
+//})
+
+
+let trayOn = false
+
+function putInTray() {
+  if (trayOn) {
+    trayOn = false
+    ipc.send('remove-tray')
+  } else {
+    trayOn = true
+    const message = 'Click demo again to remove.'
+    ipc.send('put-in-tray')
+  }
+}
+// Tray removed from context menu on icon
+ipc.on('tray-removed', function () {
+  ipc.send('remove-tray')
+  trayOn = false
+})
+
+putInTray();
