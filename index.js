@@ -33,35 +33,49 @@ function update_habitica(){
 }
 var time = document.getElementById("time");
 var start_pom = document.getElementById("pom");
+var start_break = document.getElementById("break");
 
-start_pom.addEventListener("click", function() { 
- display_time(1500); 
+start_pom.addEventListener("click", function(ev) { 
+  start_pom.disabled = true;
+  start_break.disabled = false;
+  start_time = new Date().getTime() / 1000;
+  display_time(ev.target, 1500); 
+}, false);
+
+start_break.addEventListener("click", function(ev) {
+  start_break.disabled = true;
+  start_pom.disabled = false;
+  start_time = new Date().getTime() / 1000;
+  display_time(ev.target, 300); 
 }, false);
 
 var start_time = new Date().getTime() / 1000;
 
-console.log(Date.now());
-function display_time(countdown) {
+function display_time(ev, countdown) {
   setTimeout(function() {
-    set_time(countdown);  
+    set_time(ev, countdown);  
   }, 1000);
 }
 
 //time in seconds of pom
-function set_time(countdown) {
-  console.log("hello");
+function set_time(ev, countdown) {
   var elapsed_seconds = new Date().getTime() / 1000;
-  elapsed_seconds = (start_time + countdown) - elapsed_seconds;
-  var minutes = elapsed_seconds / 60;
-  if (countdown - minutes < 25) {
+  var second_countdown = (start_time + countdown) - elapsed_seconds;
+  var minutes_countdown = second_countdown / 60;
+  if (ev.disabled == false){
+    console.log("guess not");
+  } else if ((elapsed_seconds) - (start_time) > countdown) {
     var new_start_time = new Date().getTime() / 1000;
     start_time = new_start_time;
-    update_habitica()
+    if(ev.id == "pom") {
+      update_habitica();
+    }
+    start_pom.disabled = false;
   } else {
-    var string = (minutes.toFixed(0)-1) + ":" + elapsed_seconds.toFixed(0) % 60;
-    console.log(time.innerHTML);
+    var string = (minutes_countdown) + ":" + second_countdown.toFixed(0) % 60;
     time.innerHTML = string; 
-    display_time(countdown);
+    console.log(second_countdown);
+    console.log(time.innerHTML);
+    display_time(ev, countdown);
   }
 }
-update_habitica();
