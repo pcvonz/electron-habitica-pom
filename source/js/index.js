@@ -44,7 +44,6 @@ var task = {
 
 function init() {
 	api.getUser(function(response, error){
-    console.log(error.body.success);
     if(error.body.success == true) {
       console.log(error);
       message.innerHTML = "Logged in as " + error.body.data.profile.name;
