@@ -159,10 +159,10 @@ function set_time(ev, countdown) {
     var end_time = moment();
     var total_time_format = "";
     add_log(start_time_format.format('hh:mm'), end_time.format('hh:mm'), total_time_format);
-  } else if (second_countdown.toFixed(0) >= 0) {
-    var end_time = moment().format('hh:mm');
+  } else if (second_countdown.toFixed(0) <= 0) {
+    var end_time = moment();
     var total_time_format = "";
-    add_log(start_time_format('hh:mm'), end_time.format('hh:mm'), total_time_format);
+    add_log(start_time_format.format('hh:mm'), end_time.format('hh:mm'), total_time_format);
     var new_start_time = new Date().getTime() / 1000;
     start_time = new_start_time;
     if(ev.id == "pom") {
@@ -194,6 +194,7 @@ set_password.addEventListener('click', function (event) {
           message.innerHTML = "Failed login"; 
         } else {
           message.innerHTML = "Login success!"; 
+          init();
         }
       })
 		}
