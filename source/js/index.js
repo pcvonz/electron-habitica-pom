@@ -31,7 +31,6 @@ fs.readFile("user.config", 'utf8', function (err, data) {
 		return console.log(err);
 	} else{
 		var arr = JSON.parse(data);
-    console.log(arr);
 		api = new habitica(arr.uid, arr.api, "https://habitica.com/api/v3");
     init();
 	}
@@ -45,13 +44,21 @@ var task = {
 
 function init() {
 	api.getUser(function(response, error){
-		stats = error.body.data.stats
-		delta = stats.delta;
-		exp = stats.exp;
-		gp = stats.gp;
-		hp = stats.hp;
-		mp = stats.mp;
-		lvl = stats.lvl;
+    console.log(error.body.success);
+    if(error.body.success == true) {
+      console.log(error);
+      message.innerHTML = "Logged in as " + error.body.data.profile.name;
+      stats = error.body.data.stats
+      delta = stats.delta;
+      exp = stats.exp;
+      gp = stats.gp;
+      hp = stats.hp;
+      mp = stats.mp;
+      lvl = stats.lvl;
+    } else {
+      console.log(error.body.success);
+      message.innerHTML = "Login:"
+    }
 	});
 
 	api.getTask("habit_pom", function(response, error) {
@@ -153,10 +160,10 @@ function set_time(ev, countdown) {
     var end_time = moment();
     var total_time_format = "";
     add_log(start_time_format.format('hh:mm'), end_time.format('hh:mm'), total_time_format);
-  } else if ((elapsed_seconds) - (start_time) > countdown) {
+  } else if (second_countdown.toFixed(0) >= 0) {
     var end_time = moment().format('hh:mm');
     var total_time_format = "";
-    add_log(start_time, end_time, total_time_format);
+    add_log(start_time_format('hh:mm'), end_time.format('hh:mm'), total_time_format);
     var new_start_time = new Date().getTime() / 1000;
     start_time = new_start_time;
     if(ev.id == "pom") {
@@ -174,7 +181,6 @@ function set_time(ev, countdown) {
 }
 
 
-
 const set_password = document.getElementById('set_password')
 
 set_password.addEventListener('click', function (event) {
@@ -185,7 +191,6 @@ set_password.addEventListener('click', function (event) {
 		} else {
 			api = new habitica(uid_key.value, api_key.value, "https://habitica.com/api/v3");
       api.getUser(function(response, error){
-        console.log(error.body.success);
         if(error.body.success == false) {
           message.innerHTML = "Failed login"; 
         } else {
