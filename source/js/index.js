@@ -24,13 +24,16 @@ var stop = document.getElementById("stop");
 var controls = document.getElementById("controls");
 var user_form = document.getElementById("user_form");
 var message = document.getElementById("message");
+var log = document.getElementById("log");
 
 fs.readFile("user.config", 'utf8', function (err, data) {
 	if (err) {
 		return console.log(err);
 	} else{
 		var arr = JSON.parse(data);
-		api = new habitica(arr.user.uid, arr.user.api, "https://habitica.com/api/v3");
+    console.log(arr);
+		api = new habitica(arr.uid, arr.api, "https://habitica.com/api/v3");
+    init();
 	}
 });
 
@@ -61,6 +64,7 @@ function init() {
 
 function update_habitica(){
 	api.updateTaskScore('habit_pom', true, function(response, error) {
+    console.log("helloooo");
 		console.log(error.body);
 			stats = error.body.data
 			var string = 'exp: ' + (stats.exp - exp) + "\n" +
@@ -78,6 +82,13 @@ function update_habitica(){
 	});
 }
 
+function add_log(start_time, end_time, length) {
+  var el =  document.createElement("p");
+  el.className = "log-entry";
+  el.innerHTML = start_time + " " + end_time + " (" + length +")"
+  log.appendChild(el);
+}
+
 
 function update_time(new_time) {
 	time.innerHTML = new_time;
@@ -87,7 +98,10 @@ function update_time(new_time) {
 start_pom.addEventListener("click", function(ev) { 
   start_pom.disabled = true;
   start_break.disabled = false;
+  start_long_break.disabled = false;
+  stop.disabled = false;
   start_time = new Date().getTime() / 1000;
+  start_time_format = moment();
   display_time(ev.target, 1500); 
 }, false);
 
@@ -95,7 +109,10 @@ start_break.addEventListener("click", function(ev) {
 	update_time("5:00");
   start_break.disabled = true;
   start_pom.disabled = false;
+  start_long_break.disabled = false;
+  stop.disabled = false;
   start_time = new Date().getTime() / 1000;
+  start_time_format = moment();
   display_time(ev.target, 300); 
 }, false);
 start_long_break.addEventListener("click", function(ev) {
@@ -105,20 +122,25 @@ start_long_break.addEventListener("click", function(ev) {
   start_long_break.disabled = true;
   stop.disabled = false;
   start_time = new Date().getTime() / 1000;
+  start_time_format = moment();
   display_time(ev.target, 60*20); 
 }, false);
 stop.addEventListener("click", function(ev) {
   start_break.disabled = false;
   start_pom.disabled = false;
   start_long_break.disabled = false;
+  display_time(ev.target, 60*20); 
 }, false);
 
 var start_time = new Date().getTime() / 1000;
+var start_time_format = moment();
 
 function display_time(ev, countdown) {
-  setTimeout(function() {
-    set_time(ev, countdown);  
-  }, 1000);
+  if(ev.disabled == true) {
+    setTimeout(function() {
+      set_time(ev, countdown);  
+    }, 1000);
+  }
 }
 
 //time in seconds of pom
@@ -128,7 +150,13 @@ function set_time(ev, countdown) {
   var minutes_countdown = second_countdown / 60;
   if (ev.disabled == false){
 		notifier.notify("Timer Stopped!");
+    var end_time = moment();
+    var total_time_format = "";
+    add_log(start_time_format.format('hh:mm'), end_time.format('hh:mm'), total_time_format);
   } else if ((elapsed_seconds) - (start_time) > countdown) {
+    var end_time = moment().format('hh:mm');
+    var total_time_format = "";
+    add_log(start_time, end_time, total_time_format);
     var new_start_time = new Date().getTime() / 1000;
     start_time = new_start_time;
     if(ev.id == "pom") {
@@ -150,7 +178,7 @@ function set_time(ev, countdown) {
 const set_password = document.getElementById('set_password')
 
 set_password.addEventListener('click', function (event) {
-	var config = '{"user":[{"api":"'+ api_key.value +'"},{"uid":"'+ uid_key.value +'"}]}';
+	var config = '{"api":"'+ api_key.value +'","uid":"'+ uid_key.value +'"}';
 	fs.writeFile("user.config", config, 'utf8', function(err) {
 		if (err) {
 			return console.log(err);

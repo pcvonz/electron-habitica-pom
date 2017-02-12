@@ -5,7 +5,6 @@ const electron = require('electron')
 const ipc = electron.ipcMain
 const Menu = electron.Menu
 const Tray = electron.Tray
-var request = require('request');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -17,7 +16,7 @@ function createWindow () {
 
   // and load the index.html of the app.
   win.loadURL(url.format({
-    pathname: path.join(__dirname, 'index.html'),
+    pathname: path.join(__dirname, 'app/index.html'),
     protocol: 'file:',
     slashes: true
   }))
@@ -26,6 +25,20 @@ function createWindow () {
   win.webContents.openDevTools()
 
   // Emitted when the window is closed.
+  win.on('close', function (event){
+		if(!app.isQuitting) {
+			event.preventDefault()
+			win.hide();
+		}
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+
+    //win = null
+		return false;
+  })
+
+
   win.on('closed', () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
@@ -63,17 +76,33 @@ app.on('activate', () => {
 let appIcon = null
 
 ipc.on('put-in-tray', function (event) {
-  const iconName = process.platform === 'win32' ? 'windows-icon.png' : 'iconTemplate.png'
-  const iconPath = path.join(__dirname, iconName)
-  appIcon = new Tray(iconPath)
-  const contextMenu = Menu.buildFromTemplate([{
-    label: 'Remove',
-    click: function () {
-      event.sender.send('tray-removed')
-    }
-  }])
-  appIcon.setToolTip('Electron Demo in the tray.')
-  appIcon.setContextMenu(contextMenu)
+	if (appIcon == null) {
+		const iconName = process.platform === 'win32' ? 'windows-icon.png' : 'iconTemplate.png'
+		const iconPath = path.join(__dirname, iconName)
+		appIcon = new Tray(iconPath)
+		const contextMenu = Menu.buildFromTemplate([{
+			label: 'quit',
+			click: function () {
+				app.isQuitting = true;
+				app.quit();
+			}
+		}, 
+		{ 
+			label: 'Show App', 
+			click: function() {
+				win.show();
+			}
+		}
+
+		])
+		appIcon.setTitle("Hello");
+		appIcon.setToolTip('Habit Pom')
+		appIcon.setContextMenu(contextMenu)
+	}
+})
+
+ipc.on('update-tray', function(event, string) {
+		appIcon.setToolTip(string)
 })
 
 ipc.on('remove-tray', function () {
