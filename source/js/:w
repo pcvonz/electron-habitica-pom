@@ -29,8 +29,9 @@ var log = document.getElementById("log");
 
 //Audio
 var aud = new Audio();
-aud.src = 'static/js/bell.ogg';
+aud.src = 'bell.ogg';
 
+aud.play();
 
 fs.readFile("user.config", 'utf8', function (err, data) {
 	if (err) {
@@ -179,10 +180,8 @@ function set_time(ev, countdown) {
     start_time = new_start_time;
     if(ev.id == "pom") {
       update_habitica();
-      aud.play();
     } else {
 			notifier.notify('Breaks up!');	
-      aud.play();
 		}
     start_pom.disabled = false;
   } else {
