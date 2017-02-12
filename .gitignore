@@ -8,3 +8,4 @@ node_modules/
 share/
 app/static
 app/index.html
+user.config
