@@ -88,10 +88,10 @@ function update_habitica(){
 	});
 }
 
-function add_log(start_time, end_time, length) {
+function add_log(start_time, end_time, length, pom) {
   var el =  document.createElement("p");
   el.className = "log-entry";
-  el.innerHTML = start_time + " " + end_time + " (" + length +")"
+  el.innerHTML = "<b>" + pom + "</b>" + ": " + start_time + "-" + end_time;
   log.appendChild(el);
 }
 
@@ -153,16 +153,22 @@ function display_time(ev, countdown) {
 function set_time(ev, countdown) {
   var elapsed_seconds = new Date().getTime() / 1000;
   var second_countdown = (start_time + countdown) - elapsed_seconds;
-  var minutes_countdown = second_countdown / 60;
+  //The +1 was added so that when it reaches :00, it doesn't round down 
+  var minutes_countdown = (second_countdown+1) / 60;
+  //If user presses stop button
   if (ev.disabled == false){
 		notifier.notify("Timer Stopped!");
     var end_time = moment();
     var total_time_format = "";
-    add_log(start_time_format.format('hh:mm'), end_time.format('hh:mm'), total_time_format);
+    add_log(start_time_format.format('hh:mm'), end_time.format('hh:mm'), total_time_format, ev.id);
+    update_time("0:00");
+  //If timer counts all the way down
   } else if (second_countdown.toFixed(0) <= 0) {
+    ev.disabled = false;
+    update_time("0:00");
     var end_time = moment();
     var total_time_format = "";
-    add_log(start_time_format.format('hh:mm'), end_time.format('hh:mm'), total_time_format);
+    add_log(start_time_format.format('hh:mm'), end_time.format('hh:mm'), total_time_format, ev.id);
     var new_start_time = new Date().getTime() / 1000;
     start_time = new_start_time;
     if(ev.id == "pom") {
@@ -172,7 +178,7 @@ function set_time(ev, countdown) {
 		}
     start_pom.disabled = false;
   } else {
-    var string = (Math.floor(minutes_countdown)) + ":" + second_countdown.toFixed(0) % 60;
+    var string = (Math.floor(minutes_countdown)) + ":" + ("0" + (second_countdown.toFixed(0) % 60)).slice(-2);
 		update_time(string);
 		ipc.send('update-tray', string);
     display_time(ev, countdown);

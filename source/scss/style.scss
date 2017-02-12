@@ -1,9 +1,29 @@
 #time {
-  font-size: 10em;
+  font-size: 15em;
+  font-weight: 600;
+  font-family: "Fira Sans";
   margin:0;
   text-align: center;
 }
 
+#log {
+  overflow-y: scroll;
+  height: 200px;
+}
+
+button {
+  color: white;
+  font-family: "Fira Sans";
+  font-size: 1em;
+  font-weight: 400;
+  border: 3px solid white;
+  padding: .6em;
+  background-color: #e25f5f;
+  margin: 0 .4em;
+}
+button:hover {
+  background-color: #f58383;
+}
 #controls {
   text-align: center;
   margin-bottom: 2em;
@@ -13,8 +33,10 @@
 }
 
 html {
-  font-family: sans-serif;
+  font-family: "Fira Sans";
   overflow: hidden;
+  background-color: #e25f5f;
+  color: white;
 }
 
 .l-menu-controls {
@@ -22,6 +44,9 @@ html {
   right: 0;
   top: 0;
   z-index: 5;
+  button {
+    padding: 0.1em;
+  }
 }
 
 .l-menu {
@@ -32,6 +57,31 @@ html {
   input {
     display: block;
   }
+  button {
+    color: white;
+    font-family: "Fira Sans";
+    font-size: 1em;
+    font-weight: 400;
+    border: 3px solid white;
+    padding: .2em;
+    background-color: #e25f5f;
+    margin-top: .1em;
+    margin: 0;
+  }
+  button:hover {
+    background-color: #f58383;
+  }
+  input {
+    color: white;
+    background-color: #e25f5f;
+    margin: 0.6em .2em;
+    border: 2px solid white;
+    padding: .3em;
+    font-size: 600;
+  }
+  input::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+        color: white;
+      }
   position: absolute;
   right: -15em;
   top: 0;
