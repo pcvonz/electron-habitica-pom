@@ -1,0 +1,44 @@
+#time {
+  font-size: 10em;
+  margin:0;
+  text-align: center;
+}
+
+#controls {
+  text-align: center;
+  margin-bottom: 2em;
+}
+#user-form {
+  width: 100%;
+}
+
+html {
+  font-family: sans-serif;
+  overflow: hidden;
+}
+
+.l-menu-controls {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 5;
+}
+
+.l-menu {
+  background-color: rgb(224, 104, 110);
+  color: white;
+  padding: 1em;
+  font-weight: 600;
+  input {
+    display: block;
+  }
+  position: absolute;
+  right: -15em;
+  top: 0;
+  height: 100%;
+  transition: all .2s;
+}
+
+.menu-is-open {
+  right: 0;
+}
